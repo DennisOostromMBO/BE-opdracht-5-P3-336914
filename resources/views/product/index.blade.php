@@ -34,10 +34,11 @@
         <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
             <thead class="bg-gray-800 text-white">
                 <tr>
-                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Leverancier</th>
-                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Contact Persoon</th>
-                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Product</th>
-                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Totaal Aantal</th>
+                    <th class="w-1/5 py-3 px-4 uppercase font-semibold text-sm text-left">Leverancier</th>
+                    <th class="w-1/5 py-3 px-4 uppercase font-semibold text-sm text-left">Contact Persoon</th>
+                    <th class="w-1/5 py-3 px-4 uppercase font-semibold text-sm text-left">Product</th>
+                    <th class="w-1/5 py-3 px-4 uppercase font-semibold text-sm text-left">Totaal Aantal</th>
+                    <th class="w-1/5 py-3 px-4 uppercase font-semibold text-sm text-left">Specificatie</th>
                 </tr>
             </thead>
             <tbody class="text-gray-700">
@@ -48,11 +49,15 @@
                             <td class="py-3 px-4 text-left">{{ $product->ContactPersoon }}</td>
                             <td class="py-3 px-4 text-left">{{ $product->ProductNaam }}</td>
                             <td class="py-3 px-4 text-left">{{ $product->TotaalAantal }}</td>
+                            <td class="py-3 px-4">
+                                <a href="{{ route('products.show', ['id' => $product->ProductId, 'startDate' => request('startDate'), 'endDate' => request('endDate')]) }}" 
+                                   class="text-blue-500 hover:text-blue-700">?</a>
+                            </td>
                         </tr>
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="4" class="py-8 px-4 text-center text-gray-500 text-lg">
+                        <td colspan="5" class="py-8 px-4 text-center text-gray-500 text-lg">
                             Er zijn geen leveringen geweest van producten in deze periode
                         </td>
                     </tr>

@@ -23,6 +23,7 @@ BEGIN
         l.Naam AS LeverancierNaam,
         l.ContactPersoon,
         p.Naam AS ProductNaam,
+        p.Id AS ProductId,
         SUM(ppl.Aantal) AS TotaalAantal
     FROM 
         leverancier l
@@ -37,6 +38,33 @@ BEGIN
         l.Id, p.Id
     ORDER BY 
         l.Naam, p.Naam;
+END$$
+
+CREATE PROCEDURE spGetProductDetails(
+    IN productId INT,
+    IN startDate DATE,
+    IN endDate DATE
+)
+BEGIN
+    WITH ProductInfo AS (
+        SELECT 
+            p.Naam AS ProductNaam,
+            GROUP_CONCAT(DISTINCT a.Naam ORDER BY a.Naam) AS Allergenen
+        FROM product p
+        LEFT JOIN productperallergeen pa ON p.Id = pa.ProductId
+        LEFT JOIN allergeen a ON pa.AllergeenId = a.Id
+        WHERE p.Id = productId
+        GROUP BY p.Id
+    )
+    SELECT 
+        p.ProductNaam,
+        p.Allergenen,
+        ppl.DatumLevering,
+        ppl.Aantal
+    FROM ProductInfo p
+    CROSS JOIN productperleverancier ppl
+    WHERE ppl.ProductId = productId
+    ORDER BY ppl.DatumLevering;
 END$$
 
 DELIMITER ;
@@ -449,6 +477,28 @@ UPDATE productperleverancier SET DatumLevering = '2023-04-18' WHERE Id = 2;
 UPDATE productperleverancier SET DatumLevering = '2023-04-10' WHERE Id = 4;
 UPDATE productperleverancier SET DatumLevering = '2023-04-14' WHERE Id = 5;
 UPDATE productperleverancier SET DatumLevering = '2023-04-15' WHERE Id = 6;
+
+-- Update productperleverancier data
+TRUNCATE TABLE productperleverancier;
+INSERT INTO productperleverancier (`Id`, `LeverancierId`, `ProductId`, `DatumLevering`, `Aantal`, `DatumEerstVolgendeLevering`, `IsActief`, `DatumAangemaakt`, `DatumGewijzigd`) VALUES
+(1, 1, 1, '2023-04-09', 23, '2023-04-16', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(2, 1, 1, '2023-04-18', 21, '2023-04-25', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(3, 1, 2, '2023-04-09', 12, '2023-04-16', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(4, 1, 3, '2023-04-10', 11, '2023-04-17', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(5, 2, 4, '2023-04-14', 16, '2023-04-21', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(6, 2, 4, '2023-04-21', 23, '2023-04-28', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(7, 2, 5, '2023-04-14', 45, '2023-04-21', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(8, 2, 6, '2023-04-14', 30, '2023-04-21', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(9, 3, 7, '2023-04-12', 12, '2023-04-19', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(10, 3, 7, '2023-04-19', 23, '2023-04-26', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(11, 3, 8, '2023-04-10', 12, '2023-04-17', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(12, 3, 9, '2023-04-11', 1, '2023-04-18', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(13, 4, 10, '2023-04-16', 24, '2023-04-30', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(14, 5, 11, '2023-04-10', 47, '2023-04-17', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(15, 5, 11, '2023-04-19', 60, '2023-04-26', b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(16, 5, 12, '2023-04-11', 45, NULL, b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(17, 5, 13, '2023-04-12', 23, NULL, b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839'),
+(18, 7, 14, '2023-04-14', 20, NULL, b'1', '2024-11-13 19:30:05.403839', '2024-11-13 19:30:05.403839');
 
 -- --------------------------------------------------------
 
